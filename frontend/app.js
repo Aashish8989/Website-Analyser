@@ -2,7 +2,7 @@
    WebGuard — App Logic + Particle System
    ═══════════════════════════════════════════════ */
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://website-analyser-ceer.onrender.com";
 
 // ════════════════════════════════════════════════
 // CUSTOM CURSOR
