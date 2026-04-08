@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <title>WebGuard — Smart Website Behavior Analyzer</title>
+  <meta name="description" content="Analyze any website for trustworthiness. Get an instant Trust Score powered by content, structure, and behavior analysis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Particle Layer -->
+  <canvas id="particleCanvas"></canvas>
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ══ HEADER ══ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="24" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L3 7V14C3 19.5 8 24.5 14 26C20 24.5 25 19.5 25 14V7L14 2Z" fill="url(#hSG)" stroke="#1a1a2e" stroke-width="1.5"/>
+            <path d="M10 14L12.5 16.5L18 11" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="hSG" x1="3" y1="2" x2="25" y2="26" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4F46E5"/><stop offset="1" stop-color="#7C3AED"/>
+            </linearGradient></defs>
+          </svg>
+        </div>
+        <span class="logo-text">WebGuard</span>
+        <span class="logo-badge">AI</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#" class="nav-link active">Analyzer</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ══ HERO ══ -->
+    <section class="hero-section">
+      <div class="hero-inner">
+
+        <!-- LEFT: Text + Input -->
+        <div class="hero-left">
+          <div class="hero-tag">⚡ Real-time Website Intelligence</div>
+
+          <h1 class="hero-title">
+            Analyze Any<br/>
+            Website's <span class="highlight-word">Safety</span><br/>
+            Instantly
+          </h1>
+
+          <p class="hero-subtitle">
+            Drop a URL and WebGuard scans content, structure &amp; behavior
+            to give you an instant <strong>Trust Score</strong> — powered by 30+ risk signals.
+          </p>
+
+          <form class="search-form" id="analyzeForm" onsubmit="analyzeWebsite(event)">
+            <div class="search-bar" id="searchBar">
+              <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="urlInput" class="url-input" placeholder="Enter website URL — e.g. https://example.com" autocomplete="off" spellcheck="false"/>
+              <button type="submit" class="analyze-btn" id="analyzeBtn">🔍 Analyze Now</button>
+            </div>
+            <div class="hint-row">
+              <span>Try:</span>
+              <span class="hint-chip" onclick="fillHint('https://github.com')">github.com</span>
+              <span class="hint-chip" onclick="fillHint('https://wikipedia.org')">wikipedia.org</span>
+              <span class="hint-chip" onclick="fillHint('http://example.com')">example.com</span>
+            </div>
+          </form>
+
+          <!-- Mini trust indicators -->
+          <div class="trust-row">
+            <span class="trust-pill">✅ Free &amp; Private</span>
+            <span class="trust-pill">⚡ Instant Results</span>
+            <span class="trust-pill">🛡️ 30+ Signals</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: Illustration -->
+        <div class="hero-right">
+          <div class="hero-visual">
+            <!-- Big shield with scan rings -->
+            <div class="big-shield">
+              <div class="shield-ring sr1"></div>
+              <div class="shield-ring sr2"></div>
+              <div class="shield-ring sr3"></div>
+              <svg width="120" height="130" viewBox="0 0 120 130" fill="none">
+                <path d="M60 8L12 28V60C12 88 34 112 60 120C86 112 108 88 108 60V28L60 8Z" fill="url(#bigSG)" stroke="#1a1a2e" stroke-width="3"/>
+                <path d="M42 62L52 72L78 46" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs><linearGradient id="bigSG" x1="12" y1="8" x2="108" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#4F46E5"/><stop offset="0.5" stop-color="#7C3AED"/><stop offset="1" stop-color="#06B6D4"/>
+                </linearGradient></defs>
+              </svg>
+            </div>
+
+            <!-- Score card floating -->
+            <div class="float-card fc-score">
+              <div class="fc-icon">📊</div>
+              <div>
+                <div class="fc-title">Trust Score</div>
+                <div class="fc-val">87<span>/100</span></div>
+              </div>
+            </div>
+
+            <!-- Safe badge floating -->
+            <div class="float-card fc-safe">
+              <span class="fc-safe-dot"></span>
+              <span>Low Risk Site</span>
+            </div>
+
+            <!-- Scan running card -->
+            <div class="float-card fc-scan">
+              <div class="fc-scan-bar"><div class="fc-scan-fill"></div></div>
+              <div class="fc-scan-label">Scanning…</div>
+            </div>
+
+            <!-- Bug threat indicator -->
+            <div class="float-card fc-alert">
+              <span>🦠</span>
+              <div>
+                <div class="fc-alert-title">Threats</div>
+                <div class="fc-alert-val">0 found</div>
+              </div>
+            </div>
+
+            <!-- Magnify -->
+            <div class="float-magnify">
+              <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                <circle cx="24" cy="24" r="18" fill="#FEF9C3" stroke="#1a1a2e" stroke-width="2.5"/>
+                <circle cx="24" cy="24" r="9" fill="none" stroke="#4F46E5" stroke-width="2" stroke-dasharray="4 3"/>
+                <line x1="37" y1="37" x2="52" y2="52" stroke="#1a1a2e" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ STATS BAR ══ -->
+    <section class="stats-bar">
+      <div class="stats-inner">
+        <div class="stat-box">
+          <div class="sb-icon">📄</div>
+          <div class="sb-num">4</div>
+          <div class="sb-lbl">Analysis Modules</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-box">
+          <div class="sb-icon">⚡</div>
+          <div class="sb-num">30+</div>
+          <div class="sb-lbl">Risk Signals</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-box">
+          <div class="sb-icon">🛡️</div>
+          <div class="sb-num">100%</div>
+          <div class="sb-lbl">Free &amp; Private</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-box">
+          <div class="sb-icon">🔍</div>
+          <div class="sb-num">~5s</div>
+          <div class="sb-lbl">Analysis Time</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ FEATURES SECTION ══ -->
+    <section class="features-section" id="features">
+      <div class="features-inner">
+        <div class="section-header">
+          <div class="section-tag">🔥 What We Check</div>
+          <h2 class="section-h2">Four-Layer Security Analysis</h2>
+          <p class="section-p">Every website passes through all four modules for a complete picture</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card fc-indigo">
+            <div class="feat-emoji">📄</div>
+            <h3>Content Analysis</h3>
+            <p>Detects spam keywords, phishing phrases, ad overload, and measures real content quality.</p>
+            <ul class="feat-list">
+              <li>40+ spam keyword patterns</li>
+              <li>Text-to-HTML quality ratio</li>
+              <li>Ad signal density scoring</li>
+            </ul>
+          </div>
+          <div class="feature-card fc-violet">
+            <div class="feat-emoji">🏗️</div>
+            <h3>Structure Validation</h3>
+            <p>Checks HTTPS, site architecture, navigation integrity, and domain extensions.</p>
+            <ul class="feat-list">
+              <li>HTTPS encryption check</li>
+              <li>Contact &amp; privacy pages</li>
+              <li>Suspicious TLD detection</li>
+            </ul>
+          </div>
+          <div class="feature-card fc-cyan">
+            <div class="feat-emoji">🕵️</div>
+            <h3>Behavior Simulation</h3>
+            <p>Tracks redirects, load time, obfuscated JS, and popup attack patterns.</p>
+            <ul class="feat-list">
+              <li>Full redirect chain tracking</li>
+              <li>Obfuscated JS detection</li>
+              <li>Page load performance</li>
+            </ul>
+          </div>
+          <div class="feature-card fc-amber">
+            <div class="feat-emoji">🛡️</div>
+            <h3>Risk Engine</h3>
+            <p>Combines all signals into a 0–100 Trust Score with risk level and recommendations.</p>
+            <ul class="feat-list">
+              <li>Weighted scoring algorithm</li>
+              <li>Critical override flags</li>
+              <li>Plain-English advice</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ANALYSIS PROGRESS ══ -->
+    <section class="progress-section" id="progressSection" style="display:none">
+      <div class="result-container">
+        <div class="progress-card">
+          <div class="prog-left">
+            <div class="scan-anim">🔍</div>
+            <div>
+              <div class="prog-title">Analyzing Website…</div>
+              <div class="prog-url" id="progressUrl"></div>
+            </div>
+          </div>
+          <div class="steps-row" id="stepsGrid">
+            <div class="step-pill" id="step-fetch"><span class="sp-ico">🌐</span>Fetching Data</div>
+            <div class="step-pill" id="step-content"><span class="sp-ico">📄</span>Content Scan</div>
+            <div class="step-pill" id="step-structure"><span class="sp-ico">🏗️</span>Structure</div>
+            <div class="step-pill" id="step-behavior"><span class="sp-ico">🕵️</span>Behavior</div>
+            <div class="step-pill" id="step-risk"><span class="sp-ico">🛡️</span>Risk Engine</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ERROR ══ -->
+    <section class="error-section" id="errorSection" style="display:none">
+      <div class="result-container">
+        <div class="error-card">
+          <div class="err-burst">💥</div>
+          <h2 class="err-title">Analysis Failed!</h2>
+          <p class="err-msg" id="errorMsg"></p>
+          <button class="btn-primary" onclick="resetForm()">↩ Try Again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ RESULTS ══ -->
+    <section class="results-section" id="resultsSection" style="display:none">
+      <div class="result-container">
+
+        <!-- ── Site Header Bar ── -->
+        <div class="site-bar" id="resultHeader">
+          <div class="site-bar-left">
+            <div class="site-fav" id="faviconWrapper"></div>
+            <div>
+              <div class="site-name" id="siteTitle">—</div>
+              <div class="site-url-txt" id="siteUrl">—</div>
+            </div>
+          </div>
+          <button class="btn-outline" onclick="resetForm()">🔄 New Analysis</button>
+        </div>
+
+        <!-- ── Trust Score + Breakdown ── -->
+        <div class="score-section">
+          <!-- Gauge -->
+          <div class="gauge-block">
+            <div class="gauge-wrap">
+              <canvas id="gaugeCanvas" width="220" height="220"></canvas>
+              <div class="gauge-inside">
+                <div class="g-score" id="gaugeScore">0</div>
+                <div class="g-label">Trust Score</div>
+              </div>
+            </div>
+            <div class="risk-pill" id="riskBadge"></div>
+          </div>
+
+          <!-- Right Details -->
+          <div class="score-details">
+            <div class="rec-box" id="trustRecommendation"></div>
+            <div class="bars-block">
+              <div class="bar-row">
+                <span class="bar-lbl">📄 Content</span>
+                <div class="bar-track"><div class="bar-fill content-bar" id="contentBarFill"></div></div>
+                <span class="bar-pct" id="contentBarPct">0%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-lbl">🏗️ Structure</span>
+                <div class="bar-track"><div class="bar-fill structure-bar" id="structureBarFill"></div></div>
+                <span class="bar-pct" id="structureBarPct">0%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-lbl">🕵️ Behavior</span>
+                <div class="bar-track"><div class="bar-fill behavior-bar" id="behaviorBarFill"></div></div>
+                <span class="bar-pct" id="behaviorBarPct">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Issues + Strengths ── -->
+        <div class="split-row">
+          <div class="split-card danger-card">
+            <div class="split-head"><span class="sp-hdico">⚠️</span><h3>Issues Found</h3></div>
+            <ul id="issuesList" class="chip-list"></ul>
+          </div>
+          <div class="split-card safe-card">
+            <div class="split-head"><span class="sp-hdico">✅</span><h3>Trust Signals</h3></div>
+            <ul id="strengthsList" class="chip-list"></ul>
+          </div>
+        </div>
+
+        <!-- ── 3 Module Cards ── -->
+        <div class="module-row">
+          <div class="mod-card mod-content">
+            <div class="mod-top"><span class="mod-ico">📄</span><h3>Content</h3></div>
+            <div class="mod-score" id="contentModuleScore"></div>
+            <div id="contentMetrics" class="mod-metrics"></div>
+          </div>
+          <div class="mod-card mod-structure">
+            <div class="mod-top"><span class="mod-ico">🏗️</span><h3>Structure</h3></div>
+            <div class="mod-score" id="structureModuleScore"></div>
+            <div id="structureMetrics" class="mod-metrics"></div>
+          </div>
+          <div class="mod-card mod-behavior">
+            <div class="mod-top"><span class="mod-ico">🕵️</span><h3>Behavior</h3></div>
+            <div class="mod-score" id="behaviorModuleScore"></div>
+            <div id="behaviorMetrics" class="mod-metrics"></div>
+          </div>
+        </div>
+
+        <!-- ── Redirect Chain ── -->
+        <div class="redirect-section" id="redirectCard" style="display:none">
+          <div class="split-head"><span class="sp-hdico">🔀</span><h3>Redirect Chain</h3></div>
+          <div id="redirectChain" class="redir-list"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ HOW IT WORKS ══ -->
+    <section class="how-section" id="how-it-works">
+      <div class="how-inner">
+        <div class="how-left">
+          <div class="section-tag">⚙️ The Process</div>
+          <h2 class="section-h2 left-align">How WebGuard<br/>Analyzes Sites</h2>
+          <p class="section-p left-align">A 5-step superhero pipeline that leaves no stone unturned</p>
+        </div>
+        <div class="how-right">
+          <div class="timeline">
+            <div class="tl-step">
+              <div class="tl-num">1</div>
+              <div class="tl-body">
+                <h4>🌐 Data Collection</h4>
+                <p>Fetches full HTML, tracks response headers, status codes, and redirect chain.</p>
+              </div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-num">2</div>
+              <div class="tl-body">
+                <h4>📄 Content Scan</h4>
+                <p>40+ spam/phishing keyword patterns, ad density, and real content quality scoring.</p>
+              </div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-num">3</div>
+              <div class="tl-body">
+                <h4>🏗️ Structure Check</h4>
+                <p>HTTPS, contact/privacy pages, nav architecture, and suspicious domain extensions.</p>
+              </div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-num">4</div>
+              <div class="tl-body">
+                <h4>🕵️ Behavior Analysis</h4>
+                <p>Load speed, redirect chains, obfuscated JS, meta-refresh tricks, popup triggers.</p>
+              </div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-num">5</div>
+              <div class="tl-body">
+                <h4>🛡️ Trust Score</h4>
+                <p>Weighted engine: Structure 40% · Content 30% · Behavior 30% with critical flags.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-logo">🛡️ WebGuard <span class="logo-badge" style="font-size:0.5rem">AI</span></div>
+        <p>Smart Website Behavior Analyzer · Stay safe online!</p>
+      </div>
+      <div class="footer-right">
+        <span class="footer-chip">Content Analysis</span>
+        <span class="footer-chip">Structure Check</span>
+        <span class="footer-chip">Behavior Scan</span>
+        <span class="footer-chip">Trust Score</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
